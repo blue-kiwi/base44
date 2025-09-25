@@ -5,40 +5,34 @@
   <title>File Explorer</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
-    h2 { margin-top: 20px; }
-    a { display: block; margin: 3px 0; text-decoration: none; color: blue; }
-    a:hover { text-decoration: underline; }
+    a { display: block; margin: 5px 0; text-decoration: none; color: blue; }
   </style>
 </head>
 <body>
-  <h1>Repo Files</h1>
-  <div id="img-files"><h2>img/</h2></div>
-  <div id="icon-files"><h2>icons/</h2></div>
+  <div id="file-list">Loading...</div>
 
   <script>
     const user = "blue-kiwi";
     const repo = "base44";
-    const branch = "main"; // or "master"
+    const branch = "main"; // or master
 
     fetch(`https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`)
       .then(res => res.json())
       .then(data => {
-        const imgContainer = document.getElementById("img-files");
-        const iconContainer = document.getElementById("icon-files");
-
+        const container = document.getElementById("file-list");
+        container.innerHTML = "";
         data.tree.forEach(item => {
-          if (item.type === "blob") {
-            if (item.path.startsWith("img/")) {
+          if (item.type === "blob") { // only show files
+            if (item.path.endsWith(".png") 
+                || item.path.endsWith(".jpg")
+                || item.path.endsWith(".jpeg")
+                || item.path.endsWith(".gif")
+                || item.path.endsWith(".ico")
+                || item.path.endsWith(".svg")) {
               const link = document.createElement("a");
               link.href = item.path;
               link.textContent = item.path.replace("img/", "");
               imgContainer.appendChild(link);
-            }
-            if (item.path.startsWith("icons/")) {
-              const link = document.createElement("a");
-              link.href = item.path;
-              link.textContent = item.path.replace("icons/", "");
-              iconContainer.appendChild(link);
             }
           }
         });
